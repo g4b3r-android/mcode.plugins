@@ -1,0 +1,10 @@
+{
+  "name": "markdown-preview",
+  "version": "1.0.0",
+  "plugins": [
+    {
+      "id": "markdown-preview",
+      "file": "plugins/markdown-preview.js"
+    }
+  ]
+}

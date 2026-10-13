@@ -1,0 +1,10 @@
+{
+  "name": "csv-preview",
+  "version": "1.0.0",
+  "plugins": [
+    {
+      "id": "csv-preview",
+      "file": "plugins/csv-preview.js"
+    }
+  ]
+}

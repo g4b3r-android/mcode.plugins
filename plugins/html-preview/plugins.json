@@ -1,0 +1,10 @@
+{
+  "name": "html-preview",
+  "version": "1.0.0",
+  "plugins": [
+    {
+      "id": "html-preview",
+      "file": "plugins/html-preview.js"
+    }
+  ]
+}

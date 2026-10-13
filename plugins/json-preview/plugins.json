@@ -1,0 +1,10 @@
+{
+  "name": "json-preview",
+  "version": "1.0.0",
+  "plugins": [
+    {
+      "id": "json-preview",
+      "file": "plugins/json-preview.js"
+    }
+  ]
+}
