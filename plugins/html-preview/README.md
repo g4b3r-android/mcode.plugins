@@ -1,21 +1,37 @@
 # MCode HTML Preview
 
-**Version:** 1.0.0  
-**Package:** `mcode-html-preview.zip`  
-**Requires:** MCode with `CodeEditorAPI` 1.1.0. **Does not require LunusDroid**.
+**Versão:** 1.1.0  
+**Arquivo de instalação:** `mcode-html-preview.zip`  
+**Compatibilidade:** MCode `CodeEditorAPI` 1.1.0 ou superior. **Não exige LunusDroid.**
 
-## Install
+## O que mudou na versão 1.1.0
 
-In MCode, open **Plugins → Importar ZIP**, select `mcode-html-preview.zip` and approve the script. Open a project and tap a `.html`, `.htm` or `.xhtml` file in the project's file list. It opens in the existing **PREVIEW** panel, rather than in the code editor. Tapping another source file returns to the normal behavior.
+- Corrigido o problema em que tocar em um `.html`, `.htm` ou `.xhtml` abria apenas a WebView.
+- Agora o arquivo abre **como texto editável no editor MCode**, em sua aba normal, **e também** no painel de pré-visualização abaixo do código.
+- Alterações de texto atualizam a prévia automaticamente após aproximadamente **650 ms** sem digitação. A atualização não salva o arquivo; use o botão **Salvar** do MCode.
+- Ao trocar de aba HTML, o preview acompanha o arquivo ativo. Selecionar outro tipo de arquivo fecha a prévia do plugin.
+- Não interfere nos cliques de excluir arquivo nem na abertura de outros formatos.
+- A instalação da nova versão substitui o plugin de mesmo ID já ativo; basta importar o novo ZIP e aprovar a atualização.
 
-## Behavior and limitations
+## Instalação
 
-- Uses MCode's built-in `CodeEditorAPI.renderHtml({ file })` and its sandboxed iframe.
-- Embedded CSS and JavaScript run as supported by MCode's existing HTML preview. **JavaScript inside the preview can execute** within the iframe's sandbox. Preview only files you trust.
-- Relative local assets such as `./styles.css`, `./script.js` and images are not automatically resolved to Android SAF project files. Inline CSS/JS, embedded data URLs and appropriate absolute web URLs may work under the app's WebView/network rules.
-- MCode's `readProjectFile` only reads UTF-8 files up to **2 MiB**. Large/binary files cannot be previewed through this plugin.
-- Reuses an existing panel; does not add a visual HTML editor or modify project files.
+1. No MCode: **Plugins → Importar ZIP**.
+2. Selecione `mcode-html-preview.zip` e aprove o código do plugin.
+3. Abra um projeto e toque em um arquivo HTML na lista de arquivos.
+4. **Edite o HTML** na área de código, confira o resultado na área **PREVIEW** e **salve** pelo botão do aplicativo quando desejar.
+5. O botão **Executar** também continua disponível para atualizar a prévia nativa.
 
-## Package
+## Limitações e segurança
 
-`plugins/html-preview.js` is the **only** executable plugin script in the ZIP. Other entries provide documentation and metadata. The installer requires an explicit trust approval.
+- A prévia utiliza o **iframe sandboxed** existente no MCode. O JavaScript presente no HTML pode executar nesse iframe; visualize somente HTML confiável.
+- Recursos locais relativos, como `./style.css` e `./image.png`, podem não ser carregados quando o projeto utiliza o acesso Android SAF.
+- O editor Android aceita arquivos de texto UTF-8 com até **2 MiB**.
+- A prévia não é um editor visual de arrastar e soltar. A edição acontece na aba de código MCode, e o preview é separado.
+- Se o HTML não puder ser carregado como texto, o editor original apresenta o erro e o plugin não força a abertura.
+- Testes de simulação automatizados foram executados; funcionamento em dispositivo Android real ainda depende de validação no aplicativo.
+
+## Conteúdo do ZIP
+
+- `plugins/html-preview.js`: plugin instalável (único arquivo JS executado pelo importador)
+- `plugins.json`: manifesto descritivo
+- `README.md`: documentação

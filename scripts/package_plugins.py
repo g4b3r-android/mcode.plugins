@@ -16,11 +16,9 @@ def build(slug: str) -> Path:
     js_name = f"{slug}.js"
     source = (location / "plugins" / js_name).read_bytes()
     readme = (location / "README.md").read_bytes()
-    manifest = json.dumps(
-        {"name": slug, "version": "1.0.0", "plugins": [{"id": slug, "file": f"plugins/{js_name}"}]},
-        ensure_ascii=False,
-        indent=2,
-    ).encode("utf-8") + b"\n"
+    # Read each plugin's own version rather than resetting it to 1.0.0.
+    manifest_data = json.loads((location / "plugins.json").read_text(encoding="utf-8"))
+    manifest = json.dumps(manifest_data, ensure_ascii=False, indent=2).encode("utf-8") + b"\n"
     entries = {
         f"plugins/{js_name}": source,
         "README.md": readme,

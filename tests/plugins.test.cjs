@@ -24,10 +24,12 @@ function harness(fileContents) {
   };
   elements.fileList = list;
   const previews = []; let closes = 0;
+  let activeName = '';
   const broadcast = (type, detail = {}) => { for (const f of handlers.get(type) || []) f({ detail }); };
   const api = {
     getFiles: () => [...files.keys()].map(name => ({ name })),
     getFile: name => files.has(name) ? ({ name, content: files.get(name) }) : null,
+    getActiveFile: () => activeName ? ({ name: activeName, content: files.get(activeName) }) : null,
     renderHtml: preview => { previews.push(preview); broadcast('code-editor:html-rendered', { title: preview.title, html: preview.html }); return preview; },
     closePreview: () => { closes++; broadcast('code-editor:preview-closed'); }
   };
@@ -61,15 +63,18 @@ function harness(fileContents) {
       stopImmediatePropagation: () => { stopped = true; }
     };
     for (const cb of [...captureListeners]) { if (!stopped) cb(event); }
+    if (!stopped && !options.delete && files.has(name)) activeName = name;
     return { prevented, stopped };
   }
   return { install, click, api, files, previews, notifications, broadcast, listenerCount: () => captureListeners.length, closed: () => closes };
 }
 
-test('HTML: click .html opens project file in existing sandboxed preview, no editor tab', () => {
+test('HTML: click .html keeps an editable source tab and shows preview', async () => {
   const h = harness({ 'web/index.html': '<h1>Olá!</h1>', 'README.md': '# hi' });
   const remove = h.install('html-preview');
-  assert.deepEqual(h.click('web/index.html'), { prevented: true, stopped: true });
+  assert.deepEqual(h.click('web/index.html'), { prevented: false, stopped: false });
+  await Promise.resolve();
+  assert.equal(h.api.getActiveFile().name, 'web/index.html');
   assert.equal(h.previews[0].file, 'web/index.html');
   assert.equal(h.previews[0].title, 'web/index.html');
   assert.deepEqual(h.click('README.md'), { prevented: false, stopped: false });
@@ -153,10 +158,12 @@ test('CSV and TSV: quote/embedded delimiters, safety, max rows and no cell evalu
   assert.match(h.previews[2].html, /<th>nome<\/th><th>valor<\/th>/);
 });
 
-test('All four plugins coexist and only intercept matching extensions', () => {
+test('All four plugins coexist and only intercept matching extensions', async () => {
   const h = harness({ 'index.html': '<p>A</p>', 'readme.md': 'hello', 'config.json': '{}', 'a.csv': 'x\ny', 'main.py': 'print(1)' });
   const stops = ['html-preview','markdown-preview','json-preview','csv-preview'].map(x => h.install(x));
-  for (const name of ['index.html','readme.md','config.json','a.csv']) assert.equal(h.click(name).stopped, true, name);
+  assert.equal(h.click('index.html').stopped, false, 'HTML must remain editable');
+  await Promise.resolve();
+  for (const name of ['readme.md','config.json','a.csv']) assert.equal(h.click(name).stopped, true, name);
   assert.equal(h.previews.length, 4);
   assert.equal(h.click('main.py').stopped, false);
   h.broadcast('android:project-loading');

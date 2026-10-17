@@ -21,6 +21,6 @@ jobs:
         with:
           node-version: '22'
       - name: Test plugin behavior
-        run: node --test tests/plugins.test.cjs
+        run: node --test tests/*.test.cjs
       - name: Verify installable ZIPs
         run: python3 -m unittest discover -s tests -p 'test_*.py'
